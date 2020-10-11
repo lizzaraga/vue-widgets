@@ -17,7 +17,6 @@ export class ModalVM{
 
     constructor(title: string){
         this.title = title
-        console.log(this)
     }
 
     openModal(){
