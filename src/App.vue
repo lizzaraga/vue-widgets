@@ -1,55 +1,57 @@
 <template>
-  <div id="app">
-   <CirclePlaceholder bgColor="#19197415" :radius="100">
-     <CircleLoader :radius="40" />
-   </CirclePlaceholder>
-  <Margin top="10px">
-     <LinePlaceholder width="100px" bgColor="dodgerblue"/>
-  </Margin>
-
-  <Margin top = "20px">
-    <Divider :thickness="2" bgColor="#ccc"/>
-  </Margin>
-
-  <Margin top="30px">
-    <Stack height="100px">
-     <AbsoluteBox height="50px" width="50px" bgColor="crimson"/>
-     <AbsoluteBox left="50px" top="50px" height="50px" width="50px" bgColor="royalblue"/>
-     <AbsoluteBox left="100px"  height="50px" width="50px" bgColor="black"/>
-    </Stack>
-  </Margin>
-  </div>
-
-  
+  <div id="app" :class="classes">
+   <modal-vue  :vm="modalVM" @close="modalVM.closeModal()">
+     <div>
+       Lorem ipsum, dolor sit amet consectetur adipisicing elit. Possimus laboriosam recusandae est obcaecati incidunt consequatur iure deleniti et, accusantium optio velit nobis, vel quidem sequi accusamus quis quam officia necessitatibus?
+     </div>
+   </modal-vue>
+   <button @click="modalVM.openModal()">Open modal</button>
+  </div>  
 </template>
+<script lang="ts">
+import Vue from 'vue'
+import ModalVue from './components/modal/Modal.vue'
+import { ModalVM, ModalPosition } from './components/modal/modal.vm'
 
+export default Vue.extend({
+  components: {
+    ModalVue
+  },
+  data(){
+    return {
+      classes: ["Helo", "world"],
+      modalVM: new ModalVM("Getting Started")
+    }
+  },
+  mounted(){
+    this.modalVM.modalClasses.push('my-modal')
+    this.modalVM.position = ModalPosition.top
+  }
+})
+</script>
 <style lang="scss">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Nunito Sans',  Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
+.x-modal.my-modal{
+  background-color: rgb(22, 21, 22);
+  color: rgb(218, 219, 245);
+  box-shadow: 0 1px 8px 1px #555;
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  .x-modal__header{
+    border-bottom: 1px solid #0003;
+  }
+  .x-modal__header-title{
+    color: rgb(171, 169, 255);
+   
+  }
+  .x-modal__header-close{
+    background-color: rgb(171, 169, 255);
   }
 }
 
-.loader{
-  
-
-  &::after{
-    border-top-color: brown !important;
-  }
-}
 </style>
