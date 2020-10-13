@@ -1,9 +1,13 @@
 <template>
   <div id="app" :class="classes">
    <modal-vue  :vm="modalVM" @close="modalVM.closeModal()">
-     <div>
+     <div v-ripple>
        Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti neque architecto corporis delectus, ea molestiae nesciunt vel odit quam in?
      </div>
+     <template #footer>
+       <button v-ripple class="x-button round light">After</button>
+       <button v-ripple style="margin-left: 1em" class="x-button round light">Cancel</button>
+     </template>
    </modal-vue>
    <sidebar-vue :vm="sidebarVM" @close="sidebarVM.closeSidebar()">
      <h2 style="text-align: center">iOS Updates</h2>
@@ -14,27 +18,34 @@
        accusantium dicta doloremque repudiandae, ab nesciunt?
      </p>
    </sidebar-vue>
-   <button @click="modalVM.openModal()">Open modal</button>
-   <button @click="sidebarVM.openSidebar()">Open sidebar</button>
+   <button class="x-button round light" style="margin-right: 1em" @click="modalVM.openModal()">Open modal</button>
+   <button class="x-button light" @click="sidebarVM.openSidebar()">Open sidebar</button>
+    <scheduler-vue :vm="schedulerVM"/>
+    <form action="">
+      <input type="text">
+    </form>
   </div>  
 </template>
 <script lang="ts">
 import Vue from 'vue'
 import ModalVue from './components/modal/Modal.vue'
-
 import { ModalVM, ModalPosition } from './components/modal/modal.vm'
 import SidebarVue from './components/sidebar/Sidebar.vue'
 import { SidebarVM, SidebarPosition } from './components/sidebar/sidebar.vm'
+import SchedulerVue from './components/scheduler/Scheduler.vue'
+import { SchedulerVM } from './components/scheduler/scheduler.vm'
+
 
 export default Vue.extend({
   components: {
-    ModalVue, SidebarVue
+    SchedulerVue, SidebarVue, ModalVue
   },
   data(){
     return {
       classes: ["Helo", "world"],
       modalVM: new ModalVM("Getting Started"),
-      sidebarVM: new SidebarVM(SidebarPosition.right)
+      sidebarVM: new SidebarVM(SidebarPosition.left),
+      schedulerVM: new SchedulerVM(new Date())
     }
   },
   mounted(){
@@ -50,6 +61,10 @@ export default Vue.extend({
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+}
+
+html, body{
+  background-color: rgb(240, 162, 66);
 }
 
 .x-modal.my-modal{
@@ -75,6 +90,30 @@ export default Vue.extend({
   background-color: rgb(22, 21, 22);
   color: rgb(218, 219, 245);
   box-shadow: 1px 1px 8px 1px #555;
+}
+
+
+// Forms
+
+.x-button{
+  border: none;
+  cursor: pointer;
+  padding: 0.5em 1.8em;
+  background-color: rgb(0, 0, 0);
+  color: #2e3c50ee;
+  font-size: 0.8em;
+  height: 35px;
+  min-width: 60px;
+  font-weight: 500;
+  &.light{
+    color: #fff;
+  }
+  &.curve{
+    border-radius: 0.4em;
+  }
+  &.round{
+    border-radius: 18px;
+  }
 }
 
 </style>

@@ -35,6 +35,7 @@ export default {
     background-color: #0007;
     display: flex;
     padding-right: 2em;
+    z-index: 9999;
 
     &.right{
         justify-content: flex-end;

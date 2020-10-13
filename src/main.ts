@@ -11,6 +11,7 @@ import Padding from './components/layouts/Padding.vue'
 import Divider from './components/layouts/Divider.vue'
 import Stack from './components/layouts/Stack.vue'
 import AbsoluteBox from './components/layouts/AbsoluteBox.vue'
+import { rippleDirective } from './directives/ripple.directive'
 
 
 Vue.component('CirclePlaceholder', CirclePlaceholder)
@@ -23,6 +24,7 @@ Vue.component('Stack', Stack)
 Vue.component('AbsoluteBox', AbsoluteBox)
 Vue.config.productionTip = false
 
+Vue.directive('ripple', rippleDirective)
 new Vue({
   router,
   store,
