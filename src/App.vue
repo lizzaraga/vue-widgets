@@ -1,58 +1,42 @@
 <template>
-  <div id="app" :class="classes">
-   <modal-vue  :vm="modalVM" @close="modalVM.closeModal()">
-     <div v-ripple>
-       Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti neque architecto corporis delectus, ea molestiae nesciunt vel odit quam in?
-     </div>
-     <template #footer>
-       <button v-ripple class="x-button round light">After</button>
-       <button v-ripple style="margin-left: 1em" class="x-button round light">Cancel</button>
-     </template>
-   </modal-vue>
-   <sidebar-vue :vm="sidebarVM" @close="sidebarVM.closeSidebar()">
-     <h2 style="text-align: center">iOS Updates</h2>
-     <p style="text-align: justify; padding: 1em">
-       Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-       Necessitatibus, tempora placeat assumenda perferendis, aut
-        non distinctio fugit molestias sunt sint laboriosam. Ea repellendus vitae 
-       accusantium dicta doloremque repudiandae, ab nesciunt?
-     </p>
-   </sidebar-vue>
-   <button class="x-button round light" style="margin-right: 1em" @click="modalVM.openModal()">Open modal</button>
-   <button class="x-button light" @click="sidebarVM.openSidebar()">Open sidebar</button>
-    <scheduler-vue :vm="schedulerVM"/>
-    <form action="">
-      <input type="text">
-    </form>
+  <div id="app" >
+    <tabbar-vue :vm="tabbarVM">
+      <tabbar-item-vue :index="0" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">One</div></tabbar-item-vue>
+      <tabbar-item-vue :index="1" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">Two</div></tabbar-item-vue>
+      <template #indicator>
+        <div :style="indicatorStyle" class="tabbar-indicator"></div>
+      </template>
+    </tabbar-vue>
   </div>  
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import ModalVue from './components/modal/Modal.vue'
-import { ModalVM, ModalPosition } from './components/modal/modal.vm'
-import SidebarVue from './components/sidebar/Sidebar.vue'
-import { SidebarVM, SidebarPosition } from './components/sidebar/sidebar.vm'
-import SchedulerVue from './components/scheduler/Scheduler.vue'
-import { SchedulerVM } from './components/scheduler/scheduler.vm'
-
+import { TabbarVM } from './components/tabbar/tabbar.vm'
+import TabbarVue from './components/tabbar/Tabbar.vue'
+import TabbarItemVue from './components/tabbar/TabbarItem.vue'
 
 export default Vue.extend({
-  components: {
-    SchedulerVue, SidebarVue, ModalVue
+  components:{
+    TabbarVue,
+    TabbarItemVue
   },
   data(){
     return {
-      classes: ["Helo", "world"],
-      modalVM: new ModalVM("Getting Started"),
-      sidebarVM: new SidebarVM(SidebarPosition.left),
-      schedulerVM: new SchedulerVM(new Date())
+      tabbarVM: new TabbarVM(1),
+      indicatorStyle: ""
     }
   },
-  mounted(){
-    this.modalVM.modalClasses.push('my-modal')
-    this.modalVM.position = ModalPosition.top
-    this.sidebarVM.sidebarClasses.push('my-sidebar')
+  created(){
+    this.tabbarVM.setChildBoundsListener((parentBounds, bounds) => {
+      this.indicatorStyle = `width: ${bounds.width}px; height: ${parentBounds.height}px; left: ${bounds.left}px`
+      console.log(parentBounds, bounds, this.indicatorStyle)
+    })
+    this.tabbarVM.tabbarClasses.push('my-tabbar')
+  }, 
+  destroyed(){
+    this.tabbarVM.dispose()
   }
+  
 })
 </script>
 <style lang="scss">
@@ -62,9 +46,13 @@ export default Vue.extend({
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
-
+*{
+  box-sizing: border-box;
+}
 html, body{
   background-color: rgb(240, 162, 66);
+  overflow: hidden;
+  margin: 0;
 }
 
 .x-modal.my-modal{
@@ -116,4 +104,32 @@ html, body{
   }
 }
 
+.tab-item{
+  
+  padding: 1rem;
+  position: relative;
+  z-index: 1;
+
+  &.active{
+    background-color: transparent;
+    color: #fff;
+  }
+}
+
+.x-tabbar.my-tabbar{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  width: 100%;
+  background-color: white;
+}
+.tabbar-indicator{
+  height: 2px;
+  background-color: #000;
+  position: absolute;
+  transition: all 0.3s linear;
+  bottom: 0;
+  z-index: 0;
+  
+}
 </style>
