@@ -41,12 +41,11 @@ export default {
         }, 
         onResize(){
             this.bounds = this.$el.getBoundingClientRect()
-            this.vm.updateChildBounds(this.bounds)
+            if(this.vm.index == this.index) this.vm.updateChildBounds(this.bounds)
         }
     },
     mounted(){
-        this.bounds = this.$el.getBoundingClientRect()
-        if(this.vm.index == this.index) this.vm.updateChildBounds(this.bounds)
+        this.onResize()
         window.addEventListener('resize', this.onResize)
     },
     destroyed(){

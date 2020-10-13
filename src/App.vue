@@ -3,6 +3,7 @@
     <tabbar-vue :vm="tabbarVM">
       <tabbar-item-vue :index="0" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">One</div></tabbar-item-vue>
       <tabbar-item-vue :index="1" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">Two</div></tabbar-item-vue>
+      <tabbar-item-vue :index="2" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">Three</div></tabbar-item-vue>
       <template #indicator>
         <div :style="indicatorStyle" class="tabbar-indicator"></div>
       </template>
@@ -28,7 +29,7 @@ export default Vue.extend({
   },
   created(){
     this.tabbarVM.setChildBoundsListener((parentBounds, bounds) => {
-      this.indicatorStyle = `width: ${bounds.width}px; height: ${parentBounds.height}px; left: ${bounds.left}px`
+      this.indicatorStyle = `width: ${bounds.width}px; height: ${bounds.height}px; left: ${bounds.left}px`
       console.log(parentBounds, bounds, this.indicatorStyle)
     })
     this.tabbarVM.tabbarClasses.push('my-tabbar')
@@ -118,7 +119,7 @@ html, body{
 
 .x-tabbar.my-tabbar{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 2fr 3fr;
   position: relative;
   width: 100%;
   background-color: white;
