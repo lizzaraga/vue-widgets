@@ -1,70 +1,93 @@
 <template>
-  <div id="app" :class="classes">
-   <modal-vue  :vm="modalVM" @close="modalVM.closeModal()">
-     <div v-ripple>
-       Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti neque architecto corporis delectus, ea molestiae nesciunt vel odit quam in?
-     </div>
-     <template #footer>
-       <button v-ripple class="x-button round light">After</button>
-       <button v-ripple style="margin-left: 1em" class="x-button round light">Cancel</button>
-     </template>
-   </modal-vue>
-   <sidebar-vue :vm="sidebarVM" @close="sidebarVM.closeSidebar()">
-     <h2 style="text-align: center">iOS Updates</h2>
-     <p style="text-align: justify; padding: 1em">
-       Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-       Necessitatibus, tempora placeat assumenda perferendis, aut
-        non distinctio fugit molestias sunt sint laboriosam. Ea repellendus vitae 
-       accusantium dicta doloremque repudiandae, ab nesciunt?
-     </p>
-   </sidebar-vue>
-   <button class="x-button round light" style="margin-right: 1em" @click="modalVM.openModal()">Open modal</button>
-   <button class="x-button light" @click="sidebarVM.openSidebar()">Open sidebar</button>
-    <scheduler-vue :vm="schedulerVM"/>
-    <form action="">
-      <input type="text">
-    </form>
+  <div id="app" >
+    <tabbar-vue :vm="tabbarVM">
+      <tabbar-item-vue :index="0" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">One</div></tabbar-item-vue>
+      <tabbar-item-vue :index="1" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">Two</div></tabbar-item-vue>
+      <tabbar-item-vue :index="2" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">Three</div></tabbar-item-vue>
+      <template #indicator>
+        <div :style="indicatorStyle" class="tabbar-indicator"></div>
+      </template>
+    </tabbar-vue>
+    <div style="margin: 2em"></div>
+    <slider-vue :vm="sliderVM" :style="sliderStyle">
+      <slider-item-vue :index="0" :vm="sliderVM">
+        <div class="slider-item">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo velit, eaque, sint, reprehenderit
+           deserunt facilis expedita enim et quis cumque libero consequuntur aliquid sed est assumenda 
+           veniam possimus repellendus! Labore rerum nemo, consequuntur quidem quam in optio ipsam molestias est laudantium dignissimos assumenda consequatur magnam accusantium totam culpa dolorem. Vitae quia repellat eius a nostrum magni error iste consequuntur iusto obcaecati, neque perferendis quasi animi nihil voluptates autem aperiam dignissimos deserunt. Ab delectus repellendus beatae, iusto, aperiam harum animi voluptatum dolore autem velit laborum, ipsam consequuntur. Animi, et? Doloremque dolorum sapiente in, 
+          perspiciatis expedita commodi eum molestias placeat nisi corporis.
+        </div>
+      </slider-item-vue>
+      <slider-item-vue :index="1" :vm="sliderVM">
+        <div class="slider-item black">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam aspernatur pariatur animi 
+          officiis assumenda corporis, ipsam excepturi ipsum. Voluptate rerum consequuntur perferendis
+           quidem iure explicabo laborum modi dolorum nam accusamus, fuga reiciendis magnam laboriosam non,
+            hic nobis provident optio officia mollitia incidunt.
+           Dolorum voluptatem nam asperiores officia ipsa? Aspernatur, quaerat!
+        </div>
+      </slider-item-vue>
+    </slider-vue>
   </div>  
 </template>
 <script lang="ts">
 import Vue from 'vue'
-import ModalVue from './components/modal/Modal.vue'
-import { ModalVM, ModalPosition } from './components/modal/modal.vm'
-import SidebarVue from './components/sidebar/Sidebar.vue'
-import { SidebarVM, SidebarPosition } from './components/sidebar/sidebar.vm'
-import SchedulerVue from './components/scheduler/Scheduler.vue'
-import { SchedulerVM } from './components/scheduler/scheduler.vm'
+import { TabbarVM } from './components/tabbar/tabbar.vm'
+import TabbarVue from './components/tabbar/Tabbar.vue'
+import TabbarItemVue from './components/tabbar/TabbarItem.vue'
+import { SliderVM } from './components/slider/slider.vm'
+import SliderVue from './components/slider/Slider.vue'
+import SliderItemVue from './components/slider/SliderItem.vue'
 
 
 export default Vue.extend({
-  components: {
-    SchedulerVue, SidebarVue, ModalVue
+  components:{
+    TabbarVue,
+    TabbarItemVue,
+    SliderVue, SliderItemVue
   },
   data(){
     return {
-      classes: ["Helo", "world"],
-      modalVM: new ModalVM("Getting Started"),
-      sidebarVM: new SidebarVM(SidebarPosition.left),
-      schedulerVM: new SchedulerVM(new Date())
+      tabbarVM: new TabbarVM(1),
+      indicatorStyle: "",
+      sliderVM: new SliderVM(),
+      sliderStyle: ""
     }
   },
-  mounted(){
-    this.modalVM.modalClasses.push('my-modal')
-    this.modalVM.position = ModalPosition.top
-    this.sidebarVM.sidebarClasses.push('my-sidebar')
+  created(){
+    this.tabbarVM.setChildBoundsListener((parentBounds, bounds) => {
+      this.indicatorStyle = `width: ${bounds.width}px; height: ${bounds.height}px; left: ${bounds.left}px`
+    })
+    this.tabbarVM.addIndexChangedListener(index => this.sliderVM.index = index!)
+    this.sliderVM.setChildBoundsListener((parentBounds, childBounds) => {
+      console.log('child bounds', childBounds.height, parentBounds.height)
+      this.sliderStyle = `height: ${childBounds.height}px;`
+    })
+    this.tabbarVM.tabbarClasses.push('my-tabbar')
+    this.sliderVM.sliderClasses.push('my-slider')
+    this.sliderVM.forceIndexUpdate(this.tabbarVM.index!)
+    
+  }, 
+  destroyed(){
+    this.tabbarVM.dispose()
   }
+  
 })
 </script>
 <style lang="scss">
 #app {
-  font-family: 'Nunito Sans',  Helvetica, Arial, sans-serif;
+  font-family:   Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
-
+*{
+  box-sizing: border-box;
+}
 html, body{
   background-color: rgb(240, 162, 66);
+  overflow: hidden;
+  margin: 0;
 }
 
 .x-modal.my-modal{
@@ -116,4 +139,108 @@ html, body{
   }
 }
 
+.tab-item{
+  
+  padding: 1rem;
+  position: relative;
+  z-index: 1;
+
+  &.active{
+    background-color: transparent;
+    color: #fff;
+  }
+}
+
+.x-tabbar.my-tabbar{
+  display: grid;
+  grid-template-columns: 1fr 2fr 3fr;
+  position: relative;
+  width: 100%;
+  background-color: white;
+}
+.tabbar-indicator{
+  height: 2px;
+  background-color: #000;
+  position: absolute;
+  transition: all 0.3s linear;
+  bottom: 0;
+  z-index: 0;
+  
+}
+
+.x-slider.my-slider{
+  width: 600px;
+  background-color: rgb(240, 240, 192);
+  transition: all 0.3s linear;
+  .slider-item{
+    //background-color: #fff;
+    padding: 1em;
+
+    
+  }
+}
+
+
+
+
+
+.next-enter-active {
+    animation: next-current-enter-animation 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.next-leave-active {
+    animation: next-last-leave-animation 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.prev-enter-active {
+    animation: prev-current-enter-animation 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.prev-leave-active {
+    animation: prev-last-leave-animation 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+@keyframes next-current-enter-animation {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes next-last-leave-animation {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes prev-current-enter-animation {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes prev-last-leave-animation {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
 </style>
