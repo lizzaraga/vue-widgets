@@ -1,10 +1,8 @@
+import { BoundsBehaviour } from '../behaviours/bounds.behaviour';
 
-export class TabbarVM {
+export class TabbarVM extends BoundsBehaviour {
 
     private listeners: { (index?: number): void}[] = []
-    // USE THIS TO CUSTOMIZE YOUR TABBAR INDICATOR
-    private childBounds!: DOMRect; private parentBounds!: DOMRect 
-    private childBoundsListener!: {(parentBounds: DOMRect, bounds: DOMRect): void}
     private _childrenCount = 0
     
     public get childCount(): number {
@@ -25,6 +23,7 @@ export class TabbarVM {
     
 
     constructor(index: number | undefined = undefined ){
+        super()
         this.index = index
     }
 
@@ -36,22 +35,7 @@ export class TabbarVM {
         this.listeners.push(listener)
     }
 
-    setChildBoundsListener(listener: (parentBounds: DOMRect, bounds: DOMRect) => void){
-        this.childBoundsListener = listener
-    }
-
-    updateChildBounds(bounds: DOMRect){
-        this.childBounds = bounds
-        if(this.childBoundsListener != null && this.parentBounds != null)
-            this.childBoundsListener(this.parentBounds, bounds)
-    }
-
-    setParentBounds(parentBounds: DOMRect){
-        this.parentBounds = parentBounds
-        if(this.childBoundsListener != null && this.childBounds != null)
-            this.childBoundsListener(parentBounds, this.childBounds)
-    }
-
+    
     dispose(){
         this.listeners = []
     }
