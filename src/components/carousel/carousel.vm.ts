@@ -7,7 +7,7 @@ export default class CarouselVM extends SliderVM{
 
     startTimer(){
         this.timeoutId = window.setInterval(() => {
-            this.innerIndex ++
+            this.index ++
         }, this.timeout);
     }
 

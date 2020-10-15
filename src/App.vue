@@ -28,6 +28,13 @@
         </div>
       </slider-item-vue>
     </slider-vue>
+
+    <h2>Toast</h2>
+    <toast-vue :vm="toastVM" class="my-toast"/>
+    <button @click="showToastError">Show error</button>
+    <!-- <div class="x-toast my-toast error">
+      <span>Network Error</span>
+    </div> -->
   </div>  
 </template>
 <script lang="ts">
@@ -38,20 +45,35 @@ import TabbarItemVue from './components/tabbar/TabbarItem.vue'
 import { SliderVM } from './components/slider/slider.vm'
 import SliderVue from './components/slider/Slider.vue'
 import SliderItemVue from './components/slider/SliderItem.vue'
+import ToastVue from './components/toast/Toast.vue'
+import { ToastVM } from './components/toast/toast.vm'
+
 
 
 export default Vue.extend({
   components:{
     TabbarVue,
     TabbarItemVue,
-    SliderVue, SliderItemVue
+    SliderVue, SliderItemVue,
+    ToastVue
   },
   data(){
     return {
       tabbarVM: new TabbarVM(1),
       indicatorStyle: "",
       sliderVM: new SliderVM(),
-      sliderStyle: ""
+      sliderStyle: "",
+      toastVM: new ToastVM('fade')
+    }
+  },
+  methods:{
+    showToastError(){
+      this.toastVM
+      .error("Erreur")
+      .warn('Attention')
+      .info('Info')
+      .success('Success')
+      .show()
     }
   },
   created(){
@@ -242,5 +264,54 @@ html, body{
         transform: translateX(100%);
         opacity: 0;
     }
+}
+
+.fade-enter-active{
+  animation: slideUpEnter 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.fade-leave-active{
+  animation: slideUpLeave 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes slideUpEnter {
+  from{
+    bottom: -4rem;
+    opacity: 0;
+  }
+  to{
+    bottom: 3rem;
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpLeave {
+  from{
+    bottom: 3rem;
+    opacity: 1;
+  }
+  to{
+    bottom: -4rem;
+    opacity: 0;
+  }
+}
+
+.x-toast.my-toast{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  bottom: 3rem;
+  padding: 0.6rem 1.5rem;
+  min-width: 120px;
+  border-radius: 5px;
+  color: #fffe;
+  text-align: center;
+  font-size: 0.8rem;
+  box-shadow: 0 0 18px #0002;
+  
+  &.error{
+    background-color: rgb(216, 70, 99);
+    color: #000;
+  }
+  
 }
 </style>
