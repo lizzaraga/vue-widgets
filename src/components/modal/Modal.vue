@@ -22,19 +22,22 @@
         </div>
     </transition>
 </template>
-<script>
-import PropTypes from '@znck/prop-types'
+<script lang="ts">
 import { ModalVM } from './modal.vm'
-export default {
+import Vue, {PropOptions} from 'vue'
+export default Vue.extend({
     props:{
-        vm: PropTypes.instanceOf(ModalVM).isRequired,
+        vm: {
+            type: Object,
+            required: true
+        } as PropOptions<ModalVM>
     },
     methods: {
         close(){
             this.$emit('close')
         }
     }
-}
+})
 </script>
 <style lang="scss">
 .x-modal-backdrop{

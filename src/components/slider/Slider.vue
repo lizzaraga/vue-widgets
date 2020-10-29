@@ -4,11 +4,17 @@
     </div>
 </template>
 <script>
-import PropTypes from '@znck/prop-types'
+
 import { SliderVM } from './slider.vm'
 export default {
     props:{
-        vm: PropTypes.instanceOf(SliderVM)
+        vm: {
+            type: Object,
+            required: true,
+            validator(value){
+                return value instanceof SliderVM
+            }
+        }
     },
     mounted(){
         this.vm.childrenCount = this.$children.length

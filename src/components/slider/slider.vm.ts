@@ -29,15 +29,15 @@ export class SliderVM extends BoundsBehaviour{
     // Classes
     public sliderClasses = ['x-slider']
 
-    constructor(index = 0, prevAnimName = "prev", nextAnimName = "next"){
+    constructor(prevAnimName = "prev", nextAnimName = "next"){
         super()
         this.prevAnimationName = prevAnimName
         this.nextAnimationName = nextAnimName
-        this._index = index
+        this._index = 0
     }
     
     forceIndexUpdate(index: number){
-        this._index = index
+        this.index = index
     }
 
     next(){

@@ -5,10 +5,15 @@
 </template>
 <script>
 import { ToastVM } from './toast.vm'
-import PropTypes from '@znck/prop-types'
 export default {
     props:{
-        vm: PropTypes.instanceOf(ToastVM)
+        vm: {
+            type: Object,
+            required: true,
+            validator(value){
+                return value instanceof ToastVM
+            }
+        }
     },
     data(){
         return {
@@ -34,6 +39,7 @@ export default {
             }, ToastVM.VISIBLE_WAITING_TIME)
         },
         afterLeave(){
+
             this.timeoutId = window.setTimeout(() => {
                 this.vm.finish()
                 window.clearTimeout(this.timeoutId)
@@ -44,7 +50,13 @@ export default {
 </script>
 <style lang="scss">
 .x-toast{
+    padding: 0.6rem;
+    bottom: 3rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.8rem;
     color: #fffd;
+    box-shadow: 0 0 18px #0002;
      &.error{
         background-color: crimson;
     }

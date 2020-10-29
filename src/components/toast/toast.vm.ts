@@ -3,6 +3,7 @@ export enum ToastType{
     warn = "warn",
     info = "info",
     success = "success",
+    none = "none"
 }
 export interface ToastMessage{
     isActive: boolean;
@@ -20,7 +21,7 @@ export class ToastVM {
     message: ToastMessage = {
         isActive: false,
         message: "",
-        type: ToastType.info
+        type: ToastType.none
     }
 
 

@@ -1,6 +1,6 @@
 <template>
-  <div id="app" >
-    <tabbar-vue :vm="tabbarVM">
+  <div id="app"  >
+    <!-- <tabbar-vue :vm="tabbarVM">
       <tabbar-item-vue :index="0" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">One</div></tabbar-item-vue>
       <tabbar-item-vue :index="1" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">Two</div></tabbar-item-vue>
       <tabbar-item-vue :index="2" :vm="tabbarVM" v-slot="{isActive}"><div :class="{'active': isActive}" class="tab-item">Three</div></tabbar-item-vue>
@@ -32,33 +32,108 @@
     <h2>Toast</h2>
     <toast-vue :vm="toastVM" class="my-toast"/>
     <button @click="showToastError">Show error</button>
-    <!-- <div class="x-toast my-toast error">
-      <span>Network Error</span>
-    </div> -->
+     -->
+     <div>
+       <form ref="form" @submit.prevent="onSubmit" novalidate style="width: 350px; margin: 1.5rem">
+         
+        <MatInput name="email"  label="Birthday" placeholder="Your birthday" type="email"/>
+        <div style="margin-top: 1rem"></div>
+        <MatInput inline label="Password" name="password" placeholder="Your password" type="password"/>
+        <div style="margin-top: 1rem"></div>
+        <MatInput inline label="Description" placeholder="Enter the description" :rows="4" textarea/>
+        <div style="margin-top: 1rem"></div>
+        <input type="text" v-model="email">
+        <div style="margin-top: 1rem"></div>
+        <MatFile  inline label="file" v-model="file" name="file" placeholder="Select file"/>
+        {{file}}
+        <div style="margin-top: 1rem"></div>
+        <MatSelect inline v-model="selectedFruit" label="Choose your fruit" :items="fruits" />
+        {{selectedFruit}}
+        <div style="margin-top: 1rem"></div>
+        <button type="submit" class="x-button curve light">Submit</button>
+       </form>
+     </div>
   </div>  
 </template>
-<script lang="ts">
+<script lang="js">
 import Vue from 'vue'
+import MatInput from './components/mat-input/MatInput.vue'
+import MatSelect from './components/mat-select/MatSelect.vue'
+import MatFile from './components/mat-file/MatFile.vue'
 import { TabbarVM } from './components/tabbar/tabbar.vm'
-import TabbarVue from './components/tabbar/Tabbar.vue'
-import TabbarItemVue from './components/tabbar/TabbarItem.vue'
+// import TabbarVue from './components/tabbar/Tabbar.vue'
+// import TabbarItemVue from './components/tabbar/TabbarItem.vue'
 import { SliderVM } from './components/slider/slider.vm'
-import SliderVue from './components/slider/Slider.vue'
-import SliderItemVue from './components/slider/SliderItem.vue'
-import ToastVue from './components/toast/Toast.vue'
+// import SliderVue from './components/slider/Slider.vue'
+// import SliderItemVue from './components/slider/SliderItem.vue'
+// import ToastVue from './components/toast/Toast.vue'
 import { ToastVM } from './components/toast/toast.vm'
 
 
 
-export default Vue.extend({
+export default {
+  directives:{
+    material(el, binding){
+      el.classList.add('x-material')
+      console.log(binding)
+
+      const rootEl = el
+      const focusHandler = () => {
+        rootEl.classList.add('focus')
+        rootEl.classList.add('active')
+      }
+      const blurHandler = (e) => {
+        if(e.target.value.trim() == ""){
+          rootEl.classList.remove('active')
+          rootEl.classList.remove('focus')
+        }else rootEl.classList.remove('focus')
+      }
+      const changeHandler = (e) => {
+        if(e.target.value.trim() != ""){
+          if(rootEl.classList.contains('active') == false){
+            rootEl.classList.add('active')
+          }
+        }
+      }
+      const invalidHandler = () => {
+        rootEl.classList.add('invalid')
+      }
+      el.children[1].addEventListener('focus', focusHandler)
+      el.children[1].addEventListener('blur', blurHandler)
+      el.children[1].addEventListener('change', changeHandler)
+      el.children[1].addEventListener('invalid', invalidHandler)
+    }
+  },
   components:{
-    TabbarVue,
-    TabbarItemVue,
-    SliderVue, SliderItemVue,
-    ToastVue
+    // TabbarVue,
+    // TabbarItemVue,
+    // SliderVue, SliderItemVue,
+    // ToastVue
+    MatInput, MatSelect, MatFile
   },
   data(){
     return {
+      materialTheme:{
+        error: 'red',
+        default: 'blue'
+      },
+      selectedFruit: '6',
+      file: null,
+      fruits:[
+        {
+          displayValue: "Banana",
+          value: '1'
+        },
+        {
+          displayValue: "Orange",
+          value: '2'
+        },
+        {
+          displayValue: "Tomato",
+          value: '3'
+        }
+      ],
+      email: 'maael',
       tabbarVM: new TabbarVM(1),
       indicatorStyle: "",
       sliderVM: new SliderVM(),
@@ -69,45 +144,54 @@ export default Vue.extend({
   methods:{
     showToastError(){
       this.toastVM
-      .error("Erreur")
-      .warn('Attention')
+      .error('Please fill "Password" field')
+      .warn('Attention ')
       .info('Info')
       .success('Success')
       .show()
+    }, 
+    onSubmit(){
+      if(this.$refs.form.checkValidity() == false){
+        this.$refs.form.querySelector('.x-field-input').focus()
+      }
     }
   },
   created(){
-    this.tabbarVM.setChildBoundsListener((parentBounds, bounds) => {
-      this.indicatorStyle = `width: ${bounds.width}px; height: ${bounds.height}px; left: ${bounds.left}px`
-    })
-    this.tabbarVM.addIndexChangedListener(index => this.sliderVM.index = index!)
-    this.sliderVM.setChildBoundsListener((parentBounds, childBounds) => {
-      console.log('child bounds', childBounds.height, parentBounds.height)
-      this.sliderStyle = `height: ${childBounds.height}px;`
-    })
-    this.tabbarVM.tabbarClasses.push('my-tabbar')
-    this.sliderVM.sliderClasses.push('my-slider')
-    this.sliderVM.forceIndexUpdate(this.tabbarVM.index!)
+    // this.tabbarVM.setChildBoundsListener((parentBounds, bounds) => {
+    //   // this.indicatorStyle = `width: ${bounds.width}px; height: ${bounds.height}px; left: ${bounds.left}px`
+    
+    // })
+    // // this.tabbarVM.addIndexChangedListener(index => this.sliderVM.index = index)
+    // // this.sliderVM.setChildBoundsListener((parentBounds, childBounds) => {
+    // //   console.log('child bounds', childBounds.height, parentBounds.height)
+    // //   //this.sliderStyle = `height: ${childBounds.height}px;`
+    // // })
+    // this.tabbarVM.tabbarClasses.push('my-tabbar')
+    // this.sliderVM.sliderClasses.push('my-slider')
+    // this.sliderVM.forceIndexUpdate(this.tabbarVM.index!)
     
   }, 
   destroyed(){
     this.tabbarVM.dispose()
   }
   
-})
+}
 </script>
 <style lang="scss">
+
+
 #app {
-  font-family:   Helvetica, Arial, sans-serif;
+  font-family: Product Sans,  Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
 *{
   box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 html, body{
-  background-color: rgb(240, 162, 66);
+  background-color: #fdfdfd;
   overflow: hidden;
   margin: 0;
 }
@@ -142,12 +226,16 @@ html, body{
 
 .x-button{
   border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   padding: 0.5em 1.8em;
   background-color: rgb(0, 0, 0);
   color: #2e3c50ee;
   font-size: 0.8em;
   height: 35px;
+  text-align: center;
   min-width: 60px;
   font-weight: 500;
   &.light{
@@ -266,10 +354,55 @@ html, body{
     }
 }
 
-.fade-enter-active{
+
+
+// Fade
+.fade-enter-active {
+    animation: fadeEnter 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.fade-leave-active {
+    animation: fadeLeave 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes fadeEnter {
+    from {
+      transform-origin: 0% 0%;
+      opacity: 0;
+      transform: scale(0);
+    }
+    60%{
+      opacity: 0.4;
+      
+    }
+    to {
+      transform-origin: 0% 0%;
+      opacity: 1;
+      transform: scale(1);
+    }
+}
+
+@keyframes fadeLeave {
+    from {
+      transform-origin: 0% 0%;
+      opacity: 1;
+      transform: scale(1);
+    }
+    40%{
+      opacity: 0.6;
+      
+    }
+    to {
+        transform-origin: 0% 0%;
+        opacity: 0;
+        transform: scale(0);
+    }
+}
+
+.slideup-enter-active{
   animation: slideUpEnter 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-.fade-leave-active{
+.slideup-leave-active{
   animation: slideUpLeave 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
@@ -301,17 +434,263 @@ html, body{
   transform: translateX(-50%) translateY(0);
   bottom: 3rem;
   padding: 0.6rem 1.5rem;
-  min-width: 120px;
+  //min-width: 120px;
   border-radius: 5px;
-  color: #fffe;
   text-align: center;
   font-size: 0.8rem;
   box-shadow: 0 0 18px #0002;
   
-  &.error{
-    background-color: rgb(216, 70, 99);
-    color: #000;
-  }
-  
+
+}
+
+$invalid-color: crimson;
+$focused-color: rgb(30, 71, 255);
+$label-padding: 0.3rem;
+$offset: 0.4rem + $label-padding; 
+$field-radius: 4px;
+$font-offset: 3px;
+$field-height: 40px;
+$field-input-size: 14px;
+$field-label-size: 18px;
+$field-label-size-focus: 13px;
+$label-translate-y: ($field-height)/2 - $field-label-size / 2 - $font-offset;
+$label-focus-translate-y: -($field-label-size-focus/2) - $font-offset;
+$invalid-color: crimson;
+$focused-color:rgb(6, 155, 105);
+$label-padding: 0.3rem;
+$offset: 0.4rem+$label-padding;
+$field-radius: 4px;
+$font-offset: 3px;
+$field-height: 40px;
+$field-input-size: 14px;
+$field-label-size: 16px;
+$field-label-size-focus: 13px;
+$label-translate-y: ($field-height)/2 - $field-label-size / 2 - $font-offset;
+$label-focus-translate-y: -($field-label-size-focus/2) - $font-offset;
+.x-field.x-material {
+    position: relative;
+    height: $field-height;
+    border: 1px solid #ccc;
+    border-radius: $field-radius;
+    &>*{
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    &::after {
+        content: '';
+        position: absolute;
+        left: -1px;
+        right: -1px;
+        bottom: -1px;
+        top: -1px;
+        border: 2px solid transparent;
+        border-radius: inherit;
+        z-index: 1;
+       
+    }
+    &.inline{
+      border: none;
+      &::before, &::after{
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        top: unset;
+        border: unset;
+        height: 1px;
+        background-color: #ccc;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+      &.focus{
+        
+        &::after{
+          transform: scaleX(1);
+        }
+        
+      }
+      &::after{
+        background-color: $focused-color;
+        height: 2px;
+        transform: scaleX(0);
+      }
+      &>.x-field-label{
+        background-color: transparent;
+      }
+      
+    }
+    &>.x-field-label {
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        font-size: $field-label-size;
+        position: absolute;
+        background: #fdfdfd;
+        transform: translateY($label-translate-y);
+        padding: 0 $label-padding;
+        margin-left: $offset;
+        border-radius: $field-radius;
+        color: #999;
+        overflow: hidden;
+        max-width: calc(100% - (2*10px));
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    &>.x-field-input {
+        z-index: 2;
+        padding: 0 $offset;
+        position: relative;
+        display: block;
+        border: none;
+        height: 100%;
+        width: 100%;
+        font-size: $field-input-size;
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        font-family: inherit;
+        &:disabled {
+            cursor: not-allowed;
+            background-color: #ddd2;
+        }
+    }
+    &.active {
+        &>.x-field-label {
+            transform: translateY($label-focus-translate-y);
+            font-size: $field-label-size-focus;
+            margin-left: $offset - $label-padding;
+            max-width: unset
+        }
+    }
+    &.focus {
+        border-color: $focused-color;
+        &::after {
+            border-color: inherit;
+        }
+        &>.x-field-label {
+            color: $focused-color;
+            &.fill {
+                background-color: $focused-color;
+                color: #fdfdfd;
+            }
+        }
+        &.fill {
+            background-color: $focused-color;
+            color: #fdfdfd;
+            &>.x-field-label {
+                font-weight: bold;
+                color: inherit;
+                background-color: inherit;
+            }
+            &>.x-field-input {
+                color: inherit;
+            }
+        }
+    }
+    &.invalid {
+        border-color: $invalid-color;
+        &.focus {
+            border-color: $invalid-color;
+            &>.x-field-label {
+                color: $invalid-color;
+                &.fill {
+                    color: #fdfdfd;
+                    background-color: $invalid-color;
+                }
+            }
+            &.fill {
+                background-color: $invalid-color;
+                &>.x-field-label {
+                    color: #fdfdfd;
+                }
+            }
+        }
+    }
+    &.textarea {
+        height: initial;
+        &>.x-field-input {
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+            resize: none;
+        }
+    }
+    &.date {
+        &>.x-field-input {
+            opacity: 0;
+            cursor: text;
+        }
+        &.active {
+            &>.x-field-input {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+.x-field.select {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.2rem;
+    &>.x-field-label {
+        margin-bottom: 0.3rem;
+    }
+    &>.select-group {
+        position: relative;
+        height: $field-height;
+        box-shadow: 0 0 8px #0001;
+        border: 1px solid #aaa;
+        border-radius: $field-radius;
+        z-index: 1;
+        &::after {
+            content: '';
+            position: absolute;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            top: -1px;
+            border: 2px solid transparent;
+            border-radius: inherit;
+        }
+        &:hover {
+            &::after {
+                border: 2px solid $focused-color;
+            }
+        }
+        &>select {
+            position: relative;
+            appearance: none;
+            border: none;
+            width: 100%;
+            height: 100%;
+            padding: 0 $offset;
+            outline-color: darkblue;
+            outline-width: 2px;
+            background: transparent;
+            cursor: pointer;
+            z-index: 2;
+        }
+    }
+}
+
+// Button
+.x-button {
+    border: none;
+    cursor: pointer;
+    padding: 0.5em 1.8em;
+    background-color: rgb(0, 0, 0);
+    color: #2e3c50ee;
+    font-size: 0.85em;
+    height: 36px;
+    min-width: 60px;
+    outline: none;
+    &.light {
+        color: #fff;
+    }
+    &.curve {
+        border-radius: 0.4em;
+    }
+    &.round {
+        border-radius: 18px;
+    }
 }
 </style>

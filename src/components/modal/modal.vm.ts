@@ -4,10 +4,7 @@ export enum ModalPosition{
 
 export class ModalVM{
     public title = ""
-    private _modalClasses = ["x-modal"]
-    public get modalClasses(): string[] {
-        return this._modalClasses;
-    }
+    public modalClasses = ["x-modal"]
     public position: ModalPosition = ModalPosition.top;
     public hasHeader = true
     public hasFooter = true
@@ -17,6 +14,11 @@ export class ModalVM{
 
     constructor(title: string){
         this.title = title
+    }
+
+    pushClass(className: string){
+        this.modalClasses.push(className)
+        return this
     }
 
     openModal(){

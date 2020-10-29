@@ -4,12 +4,20 @@
     </div>
 </template>
 <script>
-import PropTypes from '@znck/prop-types'
 import { TabbarVM } from './tabbar.vm'
 export default {
     props:{
-        vm: PropTypes.instanceOf(TabbarVM),
-        index: PropTypes.number.isRequired,
+        vm: {
+            type: Object,
+            required: true,
+            validator(value){
+                return value instanceof TabbarVM
+            }
+        },
+        index: {
+            type: Number,
+            required: true
+        },
         alwaysUpdate: {
             type: Boolean,
             default: false

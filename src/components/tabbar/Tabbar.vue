@@ -6,10 +6,15 @@
 </template>
 <script>
 import { TabbarVM } from "./tabbar.vm";
-import PropTypes from '@znck/prop-types'
 export default{
     props:{
-        vm: PropTypes.instanceOf(TabbarVM)
+        vm: {
+            type: Object,
+            required: true,
+            validator(value){
+                return value instanceof TabbarVM
+            }
+        }
     },
     methods:{
         onResize(){

@@ -7,12 +7,20 @@
 </template>
 <script>
 import { SliderVM } from "./slider.vm"
-import PropTypes from '@znck/prop-types'
 
 export default {
     props: {
-        vm: PropTypes.instanceOf(SliderVM).isRequired,
-        index: PropTypes.number.isRequired,  
+        vm: {
+            type: Object,
+            required: true,
+            validator(value){
+                return value instanceof SliderVM
+            }
+        },
+        index: {
+            type: Number,
+            required: true
+        }  
     },
     data:()=>{
         return {

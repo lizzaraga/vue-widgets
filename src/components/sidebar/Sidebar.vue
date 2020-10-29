@@ -10,11 +10,17 @@
     </transition>
 </template>
 <script>
-import PropTypes from '@znck/prop-types'
 import {SidebarVM} from './sidebar.vm'
-export default {
+
+export default{
     props: {
-        vm: PropTypes.instanceOf(SidebarVM).isRequired
+        vm: {
+            type: Object,
+            required: true,
+            validator(value){
+                return value instanceof SidebarVM
+            }
+        }
     },
     methods:{
         close(){
